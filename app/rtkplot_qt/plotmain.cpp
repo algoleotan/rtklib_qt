@@ -108,6 +108,10 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent)
     IniFile=fi.absolutePath()+"/"+fi.baseName()+".ini";
 
     toolBar->addWidget(Panel1);
+    toolBar->setContextMenuPolicy(Qt::PreventContextMenu);
+
+    // Disable context menu for the main window to prevent toolbar menu popup
+    setContextMenuPolicy(Qt::NoContextMenu);
 
     FormWidth=FormHeight=0;
     Drag=0; Xn=Yn=-1; NObs=0;
@@ -539,29 +543,29 @@ void Plot::MenuOpenSol1Click()
 {
     trace(3,"MenuOpenSol1Click\n");
 
-    // ReadSol(QStringList(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open Solution 1"),QString(),tr("Solution File (*.pos *.stat *.nmea *.txt *.ubx);;All (*.*)"),nullptr,QFileDialog::DontUseNativeDialog))),0);
-    ReadSol(QStringList(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open Solution 1"),QString(),tr("Solution File (*.pos *.stat *.nmea *.txt *.ubx);;All (*.*)")))),0);
+    ReadSol(QStringList(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open Solution 1"),QString(),tr("Solution File (*.pos *.stat *.nmea *.txt *.ubx);;All (*.*)"),nullptr,QFileDialog::DontUseNativeDialog))),0);
+    // ReadSol(QStringList(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open Solution 1"),QString(),tr("Solution File (*.pos *.stat *.nmea *.txt *.ubx);;All (*.*)")))),0);
 }
 // callback on menu-open-solution-2 -----------------------------------------
 void Plot::MenuOpenSol2Click()
 {
     trace(3,"MenuOpenSol2Click\n");
-    
-    ReadSol(QStringList(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open Solution 2"),QString(),tr("Solution File (*.pos *.stat *.nmea *.txt *.ubx);;All (*.*)")))),1);
+
+    ReadSol(QStringList(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open Solution 2"),QString(),tr("Solution File (*.pos *.stat *.nmea *.txt *.ubx);;All (*.*)"),nullptr,QFileDialog::DontUseNativeDialog))),1);
 }
 // callback on menu-open-map-image ------------------------------------------
 void Plot::MenuOpenMapImageClick()
 {
     trace(3,"MenuOpenMapImage\n");
     
-    ReadMapData(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open Map Image"),MapImageFile,tr("JPEG File (*.jpg *.jpeg);;All (*.*)"))));
+    ReadMapData(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open Map Image"),MapImageFile,tr("JPEG File (*.jpg *.jpeg);;All (*.*)"),nullptr,QFileDialog::DontUseNativeDialog)));
 }
 // callback on menu-open-track-points ---------------------------------------
 void Plot::MenuOpenShapeClick()
 {
     trace(3,"MenuOpenShapePath\n");
     
-    QStringList files=QFileDialog::getOpenFileNames(this,tr("Open Shape File"),QString(),tr("Shape File (*.shp);;All (*.*)"));
+    QStringList files=QFileDialog::getOpenFileNames(this,tr("Open Shape File"),QString(),tr("Shape File (*.shp);;All (*.*)"),nullptr,QFileDialog::DontUseNativeDialog);
     for (int i=0;i<files.size();i++)
         files[i]=QDir::toNativeSeparators(files.at(i));
 
@@ -572,35 +576,35 @@ void Plot::MenuOpenSkyImageClick()
 {
     trace(3,"MenuOpenSkyImage\n");
     
-    ReadSkyData(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open Sky Image"),SkyImageFile,tr("JPEG File (*.jpg *.jpeg);;All (*.*)"))));
+    ReadSkyData(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open Sky Image"),SkyImageFile,tr("JPEG File (*.jpg *.jpeg);;All (*.*)"),nullptr,QFileDialog::DontUseNativeDialog)));
 }
 // callback on menu-oepn-waypoint -------------------------------------------
 void Plot::MenuOpenWaypointClick()
 {
     trace(3,"MenuOpenWaypointClick\n");
 
-    ReadWaypoint(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open Waypoint"),SkyImageFile,tr("GPX File (*.gpx);;All (*.*)"))));
+    ReadWaypoint(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Open Waypoint"),SkyImageFile,tr("GPX File (*.gpx);;All (*.*)"),nullptr,QFileDialog::DontUseNativeDialog)));
 }
 // callback on menu-open-obs-data -------------------------------------------
 void Plot::MenuOpenObsClick()
 {
     trace(3,"MenuOpenObsClick\n");
     
-    ReadObs(QFileDialog::getOpenFileNames(this,tr("Open Obs/Nav Data"),QString(),tr("RINEX OBS (*.obs *.*o *.*d *.*o.gz *.*o.Z *.d.gz *.d.Z);;All (*.*)")));
+    ReadObs(QFileDialog::getOpenFileNames(this,tr("Open Obs/Nav Data"),QString(),tr("RINEX OBS (*.obs *.*o *.*d *.*o.gz *.*o.Z *.d.gz *.d.Z);;All (*.*)"),nullptr,QFileDialog::DontUseNativeDialog));
 }
 // callback on menu-open-nav-data -------------------------------------------
 void Plot::MenuOpenNavClick()
 {
     trace(3,"MenuOpenNavClick\n");
     
-    ReadNav(QFileDialog::getOpenFileNames(this,tr("Open Raw Obs/Nav Messages"),QString(),tr("RINEX NAV (*.nav *.gnav *.hnav *.qnav *.*n *.*g *.*h *.*q *.*p);;All (*.*)")));
+    ReadNav(QFileDialog::getOpenFileNames(this,tr("Open Raw Obs/Nav Messages"),QString(),tr("RINEX NAV (*.nav *.gnav *.hnav *.qnav *.*n *.*g *.*h *.*q *.*p);;All (*.*)"),nullptr,QFileDialog::DontUseNativeDialog));
 }
 // callback on menu-open-elev-mask ------------------------------------------
 void Plot::MenuOpenElevMaskClick()
 {
     trace(3,"MenuOpenElevMaskClick\n");
     
-    ReadElMaskData(QDir::toNativeSeparators(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Opene Elevation Mask"),QString(),tr("Text File (*.txt);;All (*.*)")))));
+    ReadElMaskData(QDir::toNativeSeparators(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this,tr("Opene Elevation Mask"),QString(),tr("Text File (*.txt);;All (*.*)"),nullptr,QFileDialog::DontUseNativeDialog))));
 }
 // callback on menu-vis-analysis --------------------------------------------
 void Plot::MenuVisAnaClick()
@@ -1763,15 +1767,14 @@ void Plot::MouseMoveObs(int X, int Y, double dx, double dy,
 // callback on mouse-wheel events -------------------------------------------
 void Plot::wheelEvent(QWheelEvent *event)
 {
-    QPoint p(Xn,Yn);
+    QPoint mousePos = event->globalPosition().toPoint();
+    QPoint p(mousePos.x(), mousePos.y());
     double xs,ys,ds=pow(2.0,-event->angleDelta().y()/1200.0);
     int i,area=-1;
-    
+
     event->accept();
-    
+
     trace(4,"MouseWheel: WheelDelta=%d\n",event->angleDelta().y());
-    
-    if (Xn<0||Yn<0) return;
     
     if (PlotType==PLOT_TRK) { // track-plot
         GraphT->GetScale(xs,ys);
