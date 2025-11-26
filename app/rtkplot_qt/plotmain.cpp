@@ -1767,40 +1767,46 @@ void Plot::MouseMoveObs(int X, int Y, double dx, double dy,
 // callback on mouse-wheel events -------------------------------------------
 void Plot::wheelEvent(QWheelEvent *event)
 {
-    QPoint mousePos = event->globalPosition().toPoint();
-    QPoint p(mousePos.x(), mousePos.y());
+    QPoint p = event->position().toPoint();
+    // Convert mouse position from Plot window coordinates to Disp widget coordinates
+    // First convert to global screen coordinates, then to Disp widget coordinates
+    QPoint p_global = mapToGlobal(p);
+    QPoint p_disp = Disp->mapFromGlobal(p_global);
     double xs,ys,ds=pow(2.0,-event->angleDelta().y()/1200.0);
     int i,area=-1;
 
     event->accept();
 
-    trace(4,"MouseWheel: WheelDelta=%d\n",event->angleDelta().y());
-    
+    trace(4,"MouseWheel: WheelDelta=%d, p=(%d,%d), p_global=(%d,%d), p_disp=(%d,%d)\n",
+          event->angleDelta().y(), p.x(), p.y(), p_global.x(), p_global.y(), p_disp.x(), p_disp.y());
+
     if (PlotType==PLOT_TRK) { // track-plot
         GraphT->GetScale(xs,ys);
         GraphT->SetScale(xs*ds,ys*ds);
     }
     else if (PlotType<=PLOT_NSAT||PlotType==PLOT_RES||PlotType==PLOT_SNR) {
-        
+        // Check which graph contains the mouse position
+        // Use first matching graph from top to bottom
+        QPoint p1,p2;
+        trace(4,"MouseWheel: Mouse at p_disp=(%d,%d)\n", p_disp.x(), p_disp.y());
         for (i=0;i<3;i++) {
             if (PlotType==PLOT_SNR&&i!=1) continue;
-            area=GraphG[i]->OnAxis(p);
-            if (area==0||area==1||area==2) {
+            GraphG[i]->GetPos(p1,p2);
+            trace(4,"MouseWheel: Graph[%d] bounds: p1=(%d,%d) p2=(%d,%d)\n",
+                  i, p1.x(), p1.y(), p2.x(), p2.y());
+            // Check if mouse is within this graph's bounds
+            // Use < for p2.y() so bottom edge belongs to next graph
+            if (p1.x() <= p_disp.x() && p_disp.x() <= p2.x() &&
+                p1.y() <= p_disp.y() && p_disp.y() < p2.y()) {
                 GraphG[i]->GetScale(xs,ys);
                 GraphG[i]->SetScale(xs,ys*ds);
-            }
-            else if (area==0) break;
-        }
-        if (area==8) {
-            for (i=0;i<3;i++) {
-                GraphG[i]->GetScale(xs,ys);
-                GraphG[i]->SetScale(xs*ds,ys);
-                SetScaleX(xs*ds);
+                trace(4,"MouseWheel: Zoomed Graph[%d]\n", i);
+                break;
             }
         }
     }
     else if (PlotType==PLOT_OBS||PlotType==PLOT_DOP) {
-        area=GraphR->OnAxis(p);
+        area=GraphR->OnAxis(p_disp);
         if (area==0||area==8) {
             GraphR->GetScale(xs,ys);
             GraphR->SetScale(xs*ds,ys);
